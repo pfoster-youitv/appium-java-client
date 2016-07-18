@@ -58,7 +58,9 @@ public class YouiEngineAppiumSampleTest {
     private static WebDriverWait driverWait;
     private DesiredCapabilities capabilities;
 
-    /** Keep the same date prefix to identify job sets. **/
+    /**
+     * Keep the same date prefix to identify job sets.
+     **/
     private static Date date = new Date();
 
     /**
@@ -112,7 +114,9 @@ public class YouiEngineAppiumSampleTest {
         }
     };
 
-    /** Run before each test. **/
+    /**
+     * Run before each test.
+     **/
     @Before
     public void setUp() throws Exception {
         // Toggle this to switch between Android and iOS
@@ -139,7 +143,9 @@ public class YouiEngineAppiumSampleTest {
         init(driver, serverAddress);
     }
 
-    /** Run after each test. **/
+    /**
+     * Run after each test.
+     **/
     @After
     public void tearDown() throws Exception {
         if (driver != null) {
@@ -177,6 +183,17 @@ public class YouiEngineAppiumSampleTest {
         String actual = textField.findElement(By.name("Text")).getText();
 
         Assert.assertEquals(expected, actual);
+
+        WebElement noField;
+        boolean found = true;
+        try {
+            noField = driver.findElement(By.name("NoField"));
+        } catch (NoSuchElementException nsee) {
+            System.out.println("\tDid not find: NoField: error:" + nsee.toString() + " message = " + nsee.getMessage());
+            found = false;
+        }
+
+        Assert.assertFalse(found);
     }
 
     /* Sets the password field's value then retrieves that value to confirm it was set but also
@@ -261,11 +278,59 @@ public class YouiEngineAppiumSampleTest {
             try {
                 driver.findElement(By.name(toFind));
                 System.out.println("\tFound: " + toFind + ".");
-            } catch (NoSuchElementException nseException) {
+            } catch (NoSuchElementException nsee) {
                 System.out.println("\tDid not find: " + toFind + ".");
                 allFound = false;
             }
         }
         Assert.assertTrue(allFound);
+    }
+
+    /* Display tests 
+    * */
+    @org.junit.Test
+    public void testVisibility() throws Exception {
+        boolean displayed = false;
+
+        // We will check if it is hidden, opacity is 0 and if it is reachable from the root
+
+        // Test fully visible button - should be true 
+        WebElement pushButton;
+        pushButton = driver.findElement(By.name("PushButton"));
+        displayed = pushButton.isDisplayed();
+        Assert.assertTrue(displayed);
+
+        // Test fully hidden button - visibility is off - shouldn't even be able to find the button and it won't show in the page source  
+        displayed = true;
+        try {
+            WebElement hiddenButton = driver.findElement(By.name("HiddenButton"));
+        } catch (NoSuchElementException nsee) {
+            // assert we get here - can't find element 
+            System.out.println("\tDid not find: HiddenButton");
+            displayed = false;
+        }
+        Assert.assertFalse(displayed);
+
+        // Test button partially hidden by another object - should be true 
+
+        WebElement partHiddenButton;
+        partHiddenButton = driver.findElement(By.name("PartHiddenButton"));
+        displayed = partHiddenButton.isDisplayed();
+        Assert.assertTrue(displayed);
+
+        // Test button fully hidden behind another object - this will be true as we don't cover this situation
+
+        WebElement fullyHiddenButton;
+        fullyHiddenButton = driver.findElement(By.name("FullyHiddenButton"));
+        displayed = fullyHiddenButton.isDisplayed();
+        Assert.assertTrue(displayed);
+
+        // Test opaque button - should be false
+
+        WebElement opaqueButton;
+        opaqueButton = driver.findElement(By.name("OpaqueButton"));
+        displayed = opaqueButton.isDisplayed();
+        Assert.assertFalse(displayed);
+
     }
 }
