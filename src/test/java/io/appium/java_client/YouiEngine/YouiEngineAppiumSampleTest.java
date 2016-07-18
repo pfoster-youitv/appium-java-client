@@ -331,6 +331,37 @@ public class YouiEngineAppiumSampleTest {
         opaqueButton = driver.findElement(By.name("OpaqueButton"));
         displayed = opaqueButton.isDisplayed();
         Assert.assertFalse(displayed);
+    }
 
+    @org.junit.Test
+    public void clearNodeTest() throws Exception {
+
+        WebElement textElement = driver.findElement(By.name("TextEdit"));
+        textElement.sendKeys("Test Text");
+        utils.delayInSeconds(2);
+        textElement.clear();
+        utils.delayInSeconds(2);
+        // CYITextEditViews revert to node name when they are cleared
+        Assert.assertEquals("TextEdit", textElement.findElement(By.name("Text")).getText());
+
+        WebElement passwordElement = driver.findElement(By.name("PasswordEdit"));
+        passwordElement.sendKeys(("B@DP@55W0rD"));
+        utils.delayInSeconds(2);
+        passwordElement.clear();
+        utils.delayInSeconds(2);
+        // CYITextEditViews revert to node name when they are cleared
+        Assert.assertEquals("PasswordEdit", passwordElement.findElement(By.name("Text")).getText());
+
+        WebElement toggleElement = driver.findElement(By.name("ToggleButton"));
+
+        toggleElement.click();
+        utils.delayInSeconds(2);
+
+        // make sure that clicking the toggle toggled it on.
+        Assert.assertTrue(toggleElement.isSelected());
+
+        toggleElement.clear();
+        utils.delayInSeconds(2);
+        Assert.assertFalse(toggleElement.isSelected());
     }
 }
